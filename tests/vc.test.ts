@@ -109,6 +109,22 @@ describe('verify (signature only)', () => {
     expect(result.verified).toBe(false)
     expect(result.errors.some((e) => /signature/i.test(e))).toBe(true)
   })
+
+  test('rejects a VC with a malformed proofValue (non-base58btc)', async () => {
+    const f = await fixture()
+    const vc = await issue({ principal: f.principal, subject: f.subject })
+    const mutated = {
+      ...vc,
+      proof: { ...vc.proof, proofValue: 'z!@#not-base58' },
+    }
+    const result = await verify(mutated, {
+      skipSchema: true,
+      skipValidity: true,
+      skipResolve: true,
+    })
+    expect(result.verified).toBe(false)
+    expect(result.errors.some((e) => /signature check threw/i.test(e))).toBe(true)
+  })
 })
 
 function flipLastChar(s: string): string {

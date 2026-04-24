@@ -69,8 +69,8 @@ export async function verify(
     ) {
       errors.push('proof missing or unsupported cryptosuite')
     } else {
-      const { proofValue, ...proofConfigWithoutContext } = vc.proof
-      const proofConfigForHash = { '@context': vc['@context'], ...proofConfigWithoutContext }
+      const { proofValue, ...proofFields } = vc.proof
+      const proofConfigForHash = { '@context': vc['@context'], ...proofFields }
       const { proof: _omit, ...unsigned } = vc
 
       const hashData = new Uint8Array(64)
@@ -83,10 +83,10 @@ export async function verify(
       if (!didPart) {
         errors.push('verificationMethod missing DID')
       } else if (!didPart.startsWith('did:key:')) {
-        // did:web and others land in Task 10-12. Until then, error on non-did:key.
-        if (!opts.skipResolve) {
-          errors.push(`verification method DID method not supported in this phase: ${didPart}`)
-        }
+        // did:web and others land in Task 10-12. Until then, non-did:key issuers
+        // cannot have their signature verified — surface that explicitly rather
+        // than returning a misleading verified:true.
+        errors.push(`signature not checked: non-did:key issuer requires DID resolver (${didPart})`)
       } else {
         const publicKey = publicKeyFromDidKey(didPart)
         const ok = await ed.verifyAsync(signature, hashData, publicKey)
