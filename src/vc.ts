@@ -69,6 +69,25 @@ export async function verify(
     }
   }
 
+  if (!opts.skipValidity) {
+    const now = opts.now ?? new Date()
+    const skewMs = (opts.skewSeconds ?? 300) * 1000
+    const from = Date.parse(vc.validFrom)
+    const until = vc.validUntil ? Date.parse(vc.validUntil) : undefined
+    if (Number.isNaN(from)) {
+      errors.push('validFrom is not a valid RFC 3339 date-time')
+    } else if (now.getTime() + skewMs < from) {
+      errors.push(`not yet valid (validFrom ${vc.validFrom})`)
+    }
+    if (until !== undefined) {
+      if (Number.isNaN(until)) {
+        errors.push('validUntil is not a valid RFC 3339 date-time')
+      } else if (now.getTime() - skewMs > until) {
+        errors.push(`expired (validUntil ${vc.validUntil})`)
+      }
+    }
+  }
+
   try {
     if (
       !vc.proof ||
