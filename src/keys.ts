@@ -1,10 +1,6 @@
 import * as ed from '@noble/ed25519'
-import { sha512 } from '@noble/hashes/sha512'
 import { base58btc } from 'multiformats/bases/base58'
 import type { KeyPair } from './types.ts'
-
-// noble/ed25519 requires SHA-512 to be wired up on non-Node runtimes.
-ed.etc.sha512Sync = (...msgs) => sha512(ed.etc.concatBytes(...msgs))
 
 const ED25519_PUB_MULTICODEC = Uint8Array.from([0xed, 0x01])
 
@@ -39,7 +35,10 @@ export function publicKeyFromDidKey(did: string): Uint8Array {
 }
 
 export function verificationMethodId(did: string): string {
-  const fragment = did.startsWith('did:key:') ? did.slice('did:key:'.length) : did.split('#')[1]
-  if (!fragment) throw new Error(`cannot derive fragment from ${did}`)
-  return did.startsWith('did:key:') ? `${did}#${fragment}` : did
+  if (did.startsWith('did:key:')) {
+    const fragment = did.slice('did:key:'.length)
+    return `${did}#${fragment}`
+  }
+  if (!did.includes('#')) throw new Error(`cannot derive fragment from ${did}`)
+  return did
 }

@@ -52,4 +52,12 @@ describe('keys', () => {
     const vmId = verificationMethodId(did)
     expect(vmId).toBe(`${did}#${did.slice('did:key:'.length)}`)
   })
+
+  test('verificationMethodId passes through fully-formed non-did:key VMIDs', () => {
+    expect(verificationMethodId('did:web:example.com#key-1')).toBe('did:web:example.com#key-1')
+  })
+
+  test('verificationMethodId throws for non-did:key DIDs without a fragment', () => {
+    expect(() => verificationMethodId('did:web:example.com')).toThrow(/cannot derive fragment/i)
+  })
 })
