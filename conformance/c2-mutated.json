@@ -1,0 +1,37 @@
+{
+  "name": "single-byte mutation in capability.action",
+  "description": "Valid VC with capability.action mutated from \"answer\" to \"bnswer\". Verify must reject with a signature error.",
+  "clause": "C2",
+  "now": "2026-04-24T12:00:00.000Z",
+  "vc": {
+    "@context": ["https://www.w3.org/ns/credentials/v2", "https://agent-id.dev/context/v1"],
+    "type": ["VerifiableCredential", "AgentCapabilityCredential"],
+    "issuer": "did:key:z6Mkon3Necd6NkkyfoGoHxid2znGc59LU3K7mubaRcFbLfLX",
+    "validFrom": "2026-04-24T00:00:00.000Z",
+    "credentialSubject": {
+      "id": "did:key:z6Mko9hTggMwjSTEaJaPUfE6tqcy2xvU6BnNq3e3o8qVBiyH",
+      "type": "Agent",
+      "principal": "did:key:z6Mkon3Necd6NkkyfoGoHxid2znGc59LU3K7mubaRcFbLfLX",
+      "model": {
+        "vendor": "anthropic",
+        "id": "claude-opus-4-7"
+      },
+      "capability": {
+        "action": "bnswer"
+      },
+      "valid_from": "2026-04-24T00:00:00.000Z"
+    },
+    "proof": {
+      "type": "DataIntegrityProof",
+      "cryptosuite": "eddsa-jcs-2022",
+      "created": "2026-04-24T00:00:00.000Z",
+      "verificationMethod": "did:key:z6Mkon3Necd6NkkyfoGoHxid2znGc59LU3K7mubaRcFbLfLX#z6Mkon3Necd6NkkyfoGoHxid2znGc59LU3K7mubaRcFbLfLX",
+      "proofPurpose": "assertionMethod",
+      "proofValue": "z2Ga9Hz4BizTRGsxgHviMWfyHS9fgJC9exwX1P8VpZ1ksABfakUAyWpSuYy49nXGT9bCwJDyXguKCXxinnt6EbxHs"
+    }
+  },
+  "expect": {
+    "verified": false,
+    "errorMatches": ["signature"]
+  }
+}
