@@ -1,0 +1,65 @@
+{
+  "name": "did:web principal signs VC for did:web agent",
+  "description": "Principal did:web:example.com signs a VC for did:web:example.com:agents:alice. Verifier resolves both DIDs, finds the verificationMethod, validates signature and schema.",
+  "clause": "C3",
+  "now": "2026-04-24T12:00:00.000Z",
+  "didWebFixtures": {
+    "https://example.com/.well-known/did.json": {
+      "@context": ["https://www.w3.org/ns/did/v1", "https://w3id.org/security/multikey/v1"],
+      "id": "did:web:example.com",
+      "verificationMethod": [
+        {
+          "id": "did:web:example.com#key-1",
+          "type": "Multikey",
+          "controller": "did:web:example.com",
+          "publicKeyMultibase": "z6MkvRXNYcE7MMduynWTgeKbDaT1iijDSC8pZqXZc8rHPrf2"
+        }
+      ],
+      "assertionMethod": ["did:web:example.com#key-1"]
+    },
+    "https://example.com/agents/alice/did.json": {
+      "@context": ["https://www.w3.org/ns/did/v1", "https://w3id.org/security/multikey/v1"],
+      "id": "did:web:example.com:agents:alice",
+      "verificationMethod": [
+        {
+          "id": "did:web:example.com:agents:alice#key-1",
+          "type": "Multikey",
+          "controller": "did:web:example.com:agents:alice",
+          "publicKeyMultibase": "z6Mkt6316e2PN3mZdB6N9CrzomJYUd1s5yBZi1XYHmwT9TUP"
+        }
+      ],
+      "assertionMethod": ["did:web:example.com:agents:alice#key-1"],
+      "authentication": ["did:web:example.com:agents:alice#key-1"]
+    }
+  },
+  "vc": {
+    "@context": ["https://www.w3.org/ns/credentials/v2", "https://agent-id.dev/context/v1"],
+    "type": ["VerifiableCredential", "AgentCapabilityCredential"],
+    "issuer": "did:web:example.com",
+    "validFrom": "2026-04-24T00:00:00.000Z",
+    "credentialSubject": {
+      "id": "did:web:example.com:agents:alice",
+      "type": "Agent",
+      "principal": "did:web:example.com",
+      "model": {
+        "vendor": "anthropic",
+        "id": "claude-opus-4-7"
+      },
+      "capability": {
+        "action": "answer"
+      },
+      "valid_from": "2026-04-24T00:00:00.000Z"
+    },
+    "proof": {
+      "type": "DataIntegrityProof",
+      "cryptosuite": "eddsa-jcs-2022",
+      "created": "2026-04-24T00:00:00.000Z",
+      "verificationMethod": "did:web:example.com#key-1",
+      "proofPurpose": "assertionMethod",
+      "proofValue": "z5gN5abjRV5MhJggefFnqYEcFV2Z6ZezTSgxTxTr6pKM8fXgKwjGancKGg7H3HTDC1QnbgUYLR1kLRzxrmnwFcnV7"
+    }
+  },
+  "expect": {
+    "verified": true
+  }
+}
