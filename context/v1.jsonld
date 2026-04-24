@@ -1,0 +1,46 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "@protected": true,
+    "AgentCapabilityCredential": {
+      "@id": "https://agent-id.dev/context/v1#AgentCapabilityCredential",
+      "@context": {
+        "@version": 1.1,
+        "@protected": true
+      }
+    },
+    "Agent": "https://agent-id.dev/context/v1#Agent",
+    "principal": { "@id": "https://agent-id.dev/context/v1#principal", "@type": "@id" },
+    "model": {
+      "@id": "https://agent-id.dev/context/v1#model",
+      "@context": {
+        "vendor": "https://agent-id.dev/context/v1#vendor",
+        "id": "@id",
+        "fingerprint": "https://agent-id.dev/context/v1#fingerprint"
+      }
+    },
+    "capability": {
+      "@id": "https://agent-id.dev/context/v1#capability",
+      "@context": {
+        "action": "https://agent-id.dev/context/v1#action",
+        "scope": { "@id": "https://agent-id.dev/context/v1#scope", "@container": "@set" },
+        "sla": {
+          "@id": "https://agent-id.dev/context/v1#sla",
+          "@context": {
+            "latency_ms_p95": "https://agent-id.dev/context/v1#latency_ms_p95",
+            "availability": "https://agent-id.dev/context/v1#availability",
+            "token_budget": "https://agent-id.dev/context/v1#token_budget"
+          }
+        }
+      }
+    },
+    "valid_from": {
+      "@id": "https://agent-id.dev/context/v1#valid_from",
+      "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+    },
+    "valid_until": {
+      "@id": "https://agent-id.dev/context/v1#valid_until",
+      "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+    }
+  }
+}
