@@ -35,4 +35,8 @@ describe('jcs', () => {
     const h2 = jcsHash({ a: 2 })
     expect(Buffer.from(h1).equals(Buffer.from(h2))).toBe(false)
   })
+
+  test('canonicalJSON handles null literal', () => {
+    expect(new TextDecoder().decode(canonicalJSON(null))).toBe('null')
+  })
 })
