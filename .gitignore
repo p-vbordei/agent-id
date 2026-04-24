@@ -17,6 +17,7 @@ Thumbs.db
 
 # Build / deps
 node_modules/
+bun.lockb
 dist/
 build/
 target/
