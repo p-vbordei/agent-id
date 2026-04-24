@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-id.dev/schema/v1/capability.json",
+  "title": "Agent Capability Verifiable Credential",
+  "type": "object",
+  "required": ["@context", "type", "issuer", "validFrom", "credentialSubject", "proof"],
+  "properties": {
+    "@context": {
+      "type": "array",
+      "contains": { "const": "https://agent-id.dev/context/v1" },
+      "items": { "type": "string" },
+      "minItems": 2
+    },
+    "type": {
+      "type": "array",
+      "contains": { "const": "AgentCapabilityCredential" },
+      "items": { "type": "string" }
+    },
+    "issuer": { "type": "string", "pattern": "^did:" },
+    "validFrom": { "type": "string", "format": "date-time" },
+    "validUntil": { "type": "string", "format": "date-time" },
+    "credentialSubject": {
+      "type": "object",
+      "required": ["id", "type", "principal", "model", "capability", "valid_from"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^did:" },
+        "type": { "const": "Agent" },
+        "principal": { "type": "string", "pattern": "^did:" },
+        "model": {
+          "type": "object",
+          "required": ["vendor", "id"],
+          "properties": {
+            "vendor": { "type": "string", "minLength": 1 },
+            "id": { "type": "string", "minLength": 1 },
+            "fingerprint": { "type": "string" }
+          }
+        },
+        "capability": {
+          "type": "object",
+          "required": ["action"],
+          "properties": {
+            "action": { "type": "string", "minLength": 1 },
+            "scope": { "type": "array", "items": { "type": "string" } },
+            "sla": {
+              "type": "object",
+              "properties": {
+                "latency_ms_p95": { "type": "number", "minimum": 0 },
+                "availability": { "type": "number", "minimum": 0, "maximum": 1 },
+                "token_budget": { "type": "integer", "minimum": 0 }
+              }
+            }
+          }
+        },
+        "valid_from": { "type": "string", "format": "date-time" },
+        "valid_until": { "type": "string", "format": "date-time" }
+      }
+    },
+    "proof": {
+      "type": "object",
+      "required": [
+        "type",
+        "cryptosuite",
+        "created",
+        "verificationMethod",
+        "proofPurpose",
+        "proofValue"
+      ],
+      "properties": {
+        "type": { "const": "DataIntegrityProof" },
+        "cryptosuite": { "const": "eddsa-jcs-2022" },
+        "created": { "type": "string", "format": "date-time" },
+        "verificationMethod": { "type": "string" },
+        "proofPurpose": { "const": "assertionMethod" },
+        "proofValue": { "type": "string", "pattern": "^z" }
+      }
+    }
+  }
+}

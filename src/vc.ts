@@ -2,6 +2,7 @@ import * as ed from '@noble/ed25519'
 import { base58btc } from 'multiformats/bases/base58'
 import { jcsHash } from './jcs.ts'
 import { didKeyFromPublicKey, publicKeyFromDidKey, verificationMethodId } from './keys.ts'
+import { validateCapabilityVC } from './schema.ts'
 import {
   CONTEXT_AGENT_V1,
   CONTEXT_V2,
@@ -60,6 +61,13 @@ export async function verify(
   opts: VerifyOptions = {},
 ): Promise<VerifyResult> {
   const errors: string[] = []
+
+  if (!opts.skipSchema) {
+    const schemaRes = validateCapabilityVC(vc)
+    if (!schemaRes.valid) {
+      for (const e of schemaRes.errors) errors.push(`schema: ${e}`)
+    }
+  }
 
   try {
     if (
