@@ -1,6 +1,5 @@
 import { describe, expect, test } from 'bun:test'
 import { didKeyFromPublicKey, generateKeyPair } from '../src/keys.ts'
-import { resolve } from '../src/resolve.ts'
 import type { CredentialSubject } from '../src/types.ts'
 import { issue, verify } from '../src/vc.ts'
 
