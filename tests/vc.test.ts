@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 import { didKeyFromPublicKey, generateKeyPair } from '../src/keys.ts'
-import { issue } from '../src/vc.ts'
 import type { CredentialSubject } from '../src/types.ts'
+import { issue } from '../src/vc.ts'
 
 async function fixture() {
   const principal = await generateKeyPair()
