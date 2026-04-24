@@ -28,7 +28,26 @@ function resolveDidKey(did: string): DidDocument {
   }
 }
 
-async function resolveDidWeb(_did: string, _opts: ResolveOptions): Promise<DidDocument> {
-  // Filled in Task 11.
-  throw new Error('did:web resolver not yet implemented')
+async function resolveDidWeb(did: string, opts: ResolveOptions): Promise<DidDocument> {
+  const url = didWebToUrl(did)
+  const f = opts.fetch ?? fetch
+  const resp = await f(url)
+  if (!resp.ok) {
+    throw new Error(`did:web fetch failed: ${resp.status} ${resp.statusText}`)
+  }
+  const doc = (await resp.json()) as DidDocument
+  if (doc.id !== did) {
+    throw new Error(`did:web document id mismatch: expected ${did}, got ${doc.id}`)
+  }
+  return doc
+}
+
+function didWebToUrl(did: string): string {
+  const rest = did.slice('did:web:'.length)
+  const parts = rest.split(':').map(decodeURIComponent)
+  const host = parts[0]
+  if (!host) throw new Error(`invalid did:web: ${did}`)
+  if (parts.length === 1) return `https://${host}/.well-known/did.json`
+  const path = parts.slice(1).join('/')
+  return `https://${host}/${path}/did.json`
 }
