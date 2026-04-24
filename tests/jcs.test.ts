@@ -39,4 +39,18 @@ describe('jcs', () => {
   test('canonicalJSON handles null literal', () => {
     expect(new TextDecoder().decode(canonicalJSON(null))).toBe('null')
   })
+
+  test('canonicalJSON throws on undefined', () => {
+    expect(() => canonicalJSON(undefined)).toThrow(/canonicalize returned undefined/)
+  })
+
+  test('canonicalJSON throws on function', () => {
+    expect(() => canonicalJSON(() => {})).toThrow(/canonicalize returned undefined/)
+  })
+
+  test('canonicalJSON throws on cyclic reference', () => {
+    const a: { self?: unknown } = {}
+    a.self = a
+    expect(() => canonicalJSON(a)).toThrow()
+  })
 })
