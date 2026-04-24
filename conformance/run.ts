@@ -19,6 +19,15 @@ const vectors: Vector[] = readdirSync(dir)
   .filter((f) => f.endsWith('.json') && !f.startsWith('fixtures'))
   .map((f) => JSON.parse(readFileSync(join(dir, f), 'utf8')) as Vector)
 
+const requiredClauses = ['C1', 'C2', 'C3']
+const seen = new Set(vectors.map((v) => v.clause))
+for (const c of requiredClauses) {
+  if (!seen.has(c)) {
+    console.error(`MISSING conformance clause ${c}`)
+    process.exit(2)
+  }
+}
+
 let pass = 0
 let fail = 0
 
