@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 import { didKeyFromPublicKey, generateKeyPair } from '../src/keys.ts'
 import type { CredentialSubject } from '../src/types.ts'
-import { issue } from '../src/vc.ts'
+import { issue, verify } from '../src/vc.ts'
 
 async function fixture() {
   const principal = await generateKeyPair()
@@ -68,3 +68,51 @@ describe('issue', () => {
     expect(vc.validFrom).toBe('2026-04-24T00:00:00.000Z')
   })
 })
+
+describe('verify (signature only)', () => {
+  test('verifies a freshly-issued VC', async () => {
+    const f = await fixture()
+    const vc = await issue({ principal: f.principal, subject: f.subject })
+    const result = await verify(vc, { skipSchema: true, skipValidity: true, skipResolve: true })
+    expect(result.verified).toBe(true)
+    expect(result.errors).toEqual([])
+  })
+
+  test('rejects a VC with a flipped proofValue byte', async () => {
+    const f = await fixture()
+    const vc = await issue({ principal: f.principal, subject: f.subject })
+    const mutated = {
+      ...vc,
+      proof: { ...vc.proof, proofValue: flipLastChar(vc.proof.proofValue) },
+    }
+    const result = await verify(mutated, {
+      skipSchema: true,
+      skipValidity: true,
+      skipResolve: true,
+    })
+    expect(result.verified).toBe(false)
+    expect(result.errors.some((e) => /signature/i.test(e))).toBe(true)
+  })
+
+  test('rejects a VC with a tampered credentialSubject', async () => {
+    const f = await fixture()
+    const vc = await issue({ principal: f.principal, subject: f.subject })
+    const mutated = {
+      ...vc,
+      credentialSubject: { ...vc.credentialSubject, capability: { action: 'settle-payment' } },
+    }
+    const result = await verify(mutated, {
+      skipSchema: true,
+      skipValidity: true,
+      skipResolve: true,
+    })
+    expect(result.verified).toBe(false)
+    expect(result.errors.some((e) => /signature/i.test(e))).toBe(true)
+  })
+})
+
+function flipLastChar(s: string): string {
+  const last = s[s.length - 1]
+  const swapped = last === 'a' ? 'b' : 'a'
+  return s.slice(0, -1) + swapped
+}

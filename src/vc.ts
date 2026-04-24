@@ -1,13 +1,15 @@
 import * as ed from '@noble/ed25519'
 import { base58btc } from 'multiformats/bases/base58'
 import { jcsHash } from './jcs.ts'
-import { didKeyFromPublicKey, verificationMethodId } from './keys.ts'
+import { didKeyFromPublicKey, publicKeyFromDidKey, verificationMethodId } from './keys.ts'
 import {
   CONTEXT_AGENT_V1,
   CONTEXT_V2,
   type IssueOptions,
   type Proof,
   type VerifiableCredential,
+  type VerifyOptions,
+  type VerifyResult,
 } from './types.ts'
 
 export async function issue(opts: IssueOptions): Promise<VerifiableCredential> {
@@ -51,4 +53,49 @@ export async function issue(opts: IssueOptions): Promise<VerifiableCredential> {
   }
 
   return { ...unsigned, proof }
+}
+
+export async function verify(
+  vc: VerifiableCredential,
+  opts: VerifyOptions = {},
+): Promise<VerifyResult> {
+  const errors: string[] = []
+
+  try {
+    if (
+      !vc.proof ||
+      vc.proof.type !== 'DataIntegrityProof' ||
+      vc.proof.cryptosuite !== 'eddsa-jcs-2022'
+    ) {
+      errors.push('proof missing or unsupported cryptosuite')
+    } else {
+      const { proofValue, ...proofConfigWithoutContext } = vc.proof
+      const proofConfigForHash = { '@context': vc['@context'], ...proofConfigWithoutContext }
+      const { proof: _omit, ...unsigned } = vc
+
+      const hashData = new Uint8Array(64)
+      hashData.set(jcsHash(proofConfigForHash), 0)
+      hashData.set(jcsHash(unsigned), 32)
+
+      const signature = base58btc.decode(proofValue)
+
+      const didPart = vc.proof.verificationMethod.split('#')[0]
+      if (!didPart) {
+        errors.push('verificationMethod missing DID')
+      } else if (!didPart.startsWith('did:key:')) {
+        // did:web and others land in Task 10-12. Until then, error on non-did:key.
+        if (!opts.skipResolve) {
+          errors.push(`verification method DID method not supported in this phase: ${didPart}`)
+        }
+      } else {
+        const publicKey = publicKeyFromDidKey(didPart)
+        const ok = await ed.verifyAsync(signature, hashData, publicKey)
+        if (!ok) errors.push('signature verification failed')
+      }
+    }
+  } catch (err) {
+    errors.push(`signature check threw: ${(err as Error).message}`)
+  }
+
+  return { verified: errors.length === 0, errors }
 }
