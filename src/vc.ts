@@ -1,11 +1,13 @@
 import * as ed from '@noble/ed25519'
 import { base58btc } from 'multiformats/bases/base58'
 import { jcsHash } from './jcs.ts'
-import { didKeyFromPublicKey, publicKeyFromDidKey, verificationMethodId } from './keys.ts'
+import { didKeyFromPublicKey, verificationMethodId } from './keys.ts'
+import { resolve } from './resolve.ts'
 import { validateCapabilityVC } from './schema.ts'
 import {
   CONTEXT_AGENT_V1,
   CONTEXT_V2,
+  type DidDocument,
   type IssueOptions,
   type Proof,
   type VerifiableCredential,
@@ -106,17 +108,21 @@ export async function verify(
 
       const signature = base58btc.decode(proofValue)
 
-      const didPart = vc.proof.verificationMethod.split('#')[0]
-      if (!didPart) {
-        errors.push('verificationMethod missing DID')
-      } else if (!didPart.startsWith('did:key:')) {
-        // did:web and others land in Task 10-12. Until then, non-did:key issuers
-        // cannot have their signature verified — surface that explicitly rather
-        // than returning a misleading verified:true.
-        errors.push(`signature not checked: non-did:key issuer requires DID resolver (${didPart})`)
-      } else {
-        const publicKey = publicKeyFromDidKey(didPart)
-        const ok = await ed.verifyAsync(signature, hashData, publicKey)
+      let issuerPublicKey: Uint8Array | undefined
+      try {
+        const issuerDoc = await resolve(vc.issuer, opts.fetch ? { fetch: opts.fetch } : {})
+        issuerPublicKey = extractKeyForVM(issuerDoc, vc.proof.verificationMethod)
+        if (!issuerPublicKey) {
+          errors.push(
+            `issuer DID document does not list verificationMethod ${vc.proof.verificationMethod}`,
+          )
+        }
+      } catch (err) {
+        errors.push(`issuer resolution failed: ${(err as Error).message}`)
+      }
+
+      if (issuerPublicKey) {
+        const ok = await ed.verifyAsync(signature, hashData, issuerPublicKey)
         if (!ok) errors.push('signature verification failed')
       }
     }
@@ -124,5 +130,28 @@ export async function verify(
     errors.push(`signature check threw: ${(err as Error).message}`)
   }
 
+  // Agent DID resolution — separate phase.
+  if (!opts.skipResolve) {
+    try {
+      const agentDoc = await resolve(
+        vc.credentialSubject.id,
+        opts.fetch ? { fetch: opts.fetch } : {},
+      )
+      if (!agentDoc.verificationMethod?.length) {
+        errors.push('agent DID document has no verificationMethod')
+      }
+    } catch (err) {
+      errors.push(`agent DID resolution failed: ${(err as Error).message}`)
+    }
+  }
+
   return { verified: errors.length === 0, errors }
+}
+
+function extractKeyForVM(doc: DidDocument, vmId: string): Uint8Array | undefined {
+  const vm = doc.verificationMethod?.find((m) => m.id === vmId)
+  if (!vm) return undefined
+  const bytes = base58btc.decode(vm.publicKeyMultibase)
+  if (bytes[0] === 0xed && bytes[1] === 0x01) return bytes.slice(2)
+  return undefined
 }
