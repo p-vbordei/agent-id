@@ -1,0 +1,12 @@
+import canonicalize from 'canonicalize'
+import { sha256 } from '@noble/hashes/sha256'
+
+export function canonicalJSON(value: unknown): Uint8Array {
+  const str = canonicalize(value)
+  if (str === undefined) throw new Error('canonicalize returned undefined (value contains cycles or non-JSON data)')
+  return new TextEncoder().encode(str)
+}
+
+export function jcsHash(value: unknown): Uint8Array {
+  return sha256(canonicalJSON(value))
+}
