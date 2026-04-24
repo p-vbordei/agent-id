@@ -3,6 +3,7 @@ import Ajv2020, { type ErrorObject } from 'ajv/dist/2020'
 import schema from '../schema/capability-v1.json' with { type: 'json' }
 
 const ajv = new Ajv2020({ allErrors: true, strict: false })
+// addFormats must precede compile() — formats registered after compile are silently ignored.
 addFormats(ajv)
 const validator = ajv.compile(schema)
 
