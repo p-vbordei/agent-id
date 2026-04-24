@@ -1,0 +1,41 @@
+{
+  "name": "round-trip valid VC",
+  "description": "Minimal capability VC with model, principal, capability.action; verify must accept.",
+  "clause": "C1",
+  "now": "2026-04-24T12:00:00.000Z",
+  "vc": {
+    "@context": ["https://www.w3.org/ns/credentials/v2", "https://agent-id.dev/context/v1"],
+    "type": ["VerifiableCredential", "AgentCapabilityCredential"],
+    "issuer": "did:key:z6Mkon3Necd6NkkyfoGoHxid2znGc59LU3K7mubaRcFbLfLX",
+    "validFrom": "2026-04-24T00:00:00.000Z",
+    "validUntil": "2099-01-01T00:00:00.000Z",
+    "credentialSubject": {
+      "id": "did:key:z6Mko9hTggMwjSTEaJaPUfE6tqcy2xvU6BnNq3e3o8qVBiyH",
+      "type": "Agent",
+      "principal": "did:key:z6Mkon3Necd6NkkyfoGoHxid2znGc59LU3K7mubaRcFbLfLX",
+      "model": {
+        "vendor": "anthropic",
+        "id": "claude-opus-4-7"
+      },
+      "capability": {
+        "action": "answer",
+        "sla": {
+          "latency_ms_p95": 2000
+        }
+      },
+      "valid_from": "2026-04-24T00:00:00.000Z",
+      "valid_until": "2099-01-01T00:00:00.000Z"
+    },
+    "proof": {
+      "type": "DataIntegrityProof",
+      "cryptosuite": "eddsa-jcs-2022",
+      "created": "2026-04-24T00:00:00.000Z",
+      "verificationMethod": "did:key:z6Mkon3Necd6NkkyfoGoHxid2znGc59LU3K7mubaRcFbLfLX#z6Mkon3Necd6NkkyfoGoHxid2znGc59LU3K7mubaRcFbLfLX",
+      "proofPurpose": "assertionMethod",
+      "proofValue": "z3ZEohrtcvxLDX3skHfmqmNkDR3erxXdDy4C3DYmD9PdWSk8s1BGpxkocXQJWHqxGLTMhLoyqUjuvY7QjYkNAXs2X"
+    }
+  },
+  "expect": {
+    "verified": true
+  }
+}
