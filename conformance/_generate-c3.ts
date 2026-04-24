@@ -65,40 +65,14 @@ const subject: CredentialSubject = {
   valid_from: '2026-04-24T00:00:00.000Z',
 }
 
-// Sign: use issue()'s optional override fields for issuer + verificationMethod.
-// Task 26 adds these overrides. Until then, we hand-roll the VC (see below).
-// For Task 15, we write a manualIssue helper here since `issue()` currently
-// only derives issuer = did:key of principalPub — which wouldn't match
-// did:web:example.com.
-
-const { jcsHash } = await import('../src/jcs.ts')
-const CONTEXT_V2 = 'https://www.w3.org/ns/credentials/v2'
-const CONTEXT_AGENT_V1 = 'https://agent-id.dev/context/v1'
-
-const unsigned = {
-  '@context': [CONTEXT_V2, CONTEXT_AGENT_V1],
-  type: ['VerifiableCredential', 'AgentCapabilityCredential'],
+const vc = await issue({
+  principal: { publicKey: principalPub, privateKey: principalPriv },
+  subject,
   issuer: principalDid,
-  validFrom: subject.valid_from,
-  credentialSubject: subject,
-}
-const proofConfig = {
-  '@context': unsigned['@context'],
-  type: 'DataIntegrityProof' as const,
-  cryptosuite: 'eddsa-jcs-2022' as const,
-  created: subject.valid_from,
   verificationMethod: principalVmId,
-  proofPurpose: 'assertionMethod' as const,
-}
-const hashData = new Uint8Array(64)
-hashData.set(jcsHash(proofConfig), 0)
-hashData.set(jcsHash(unsigned), 32)
-const signature = await ed.signAsync(hashData, principalPriv)
-const { '@context': _c, ...proofWithoutContext } = proofConfig
-const vc = {
-  ...unsigned,
-  proof: { ...proofWithoutContext, proofValue: base58btc.encode(signature) },
-}
+  validFrom: subject.valid_from,
+  now: new Date('2026-04-24T00:00:00.000Z'),
+})
 
 mkdirSync(new URL('./fixtures', import.meta.url).pathname, { recursive: true })
 
@@ -130,6 +104,3 @@ writeFileSync(
   JSON.stringify(vector, null, 2),
 )
 console.error('wrote conformance/c3-didweb.json and fixtures')
-// Suppress the unused-var lint warning on issue import (we'd like to use issue()
-// but the issuer/vmId override isn't in IssueOptions yet — Task 26).
-void issue

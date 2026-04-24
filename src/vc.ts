@@ -16,8 +16,8 @@ import {
 } from './types.ts'
 
 export async function issue(opts: IssueOptions): Promise<VerifiableCredential> {
-  const principalDid = didKeyFromPublicKey(opts.principal.publicKey)
-  const vmId = verificationMethodId(principalDid)
+  const principalDid = opts.issuer ?? didKeyFromPublicKey(opts.principal.publicKey)
+  const vmId = opts.verificationMethod ?? verificationMethodId(principalDid)
   const now = opts.now ?? new Date()
   const subject = { ...opts.subject, principal: opts.subject.principal ?? principalDid }
 
@@ -64,14 +64,12 @@ export async function verify(
 ): Promise<VerifyResult> {
   const errors: string[] = []
 
-  if (!opts.skipSchema) {
-    const schemaRes = validateCapabilityVC(vc)
-    if (!schemaRes.valid) {
-      for (const e of schemaRes.errors) errors.push(`schema: ${e}`)
-    }
+  const schemaRes = validateCapabilityVC(vc)
+  if (!schemaRes.valid) {
+    for (const e of schemaRes.errors) errors.push(`schema: ${e}`)
   }
 
-  if (!opts.skipValidity) {
+  {
     const now = opts.now ?? new Date()
     const skewMs = (opts.skewSeconds ?? 300) * 1000
     const from = Date.parse(vc.validFrom)
@@ -131,18 +129,13 @@ export async function verify(
   }
 
   // Agent DID resolution — separate phase.
-  if (!opts.skipResolve) {
-    try {
-      const agentDoc = await resolve(
-        vc.credentialSubject.id,
-        opts.fetch ? { fetch: opts.fetch } : {},
-      )
-      if (!agentDoc.verificationMethod?.length) {
-        errors.push('agent DID document has no verificationMethod')
-      }
-    } catch (err) {
-      errors.push(`agent DID resolution failed: ${(err as Error).message}`)
+  try {
+    const agentDoc = await resolve(vc.credentialSubject.id, opts.fetch ? { fetch: opts.fetch } : {})
+    if (!agentDoc.verificationMethod?.length) {
+      errors.push('agent DID document has no verificationMethod')
     }
+  } catch (err) {
+    errors.push(`agent DID resolution failed: ${(err as Error).message}`)
   }
 
   return { verified: errors.length === 0, errors }

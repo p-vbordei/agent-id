@@ -16,7 +16,7 @@ describe('vertical slice', () => {
       valid_from: new Date().toISOString(),
     }
     const vc = await issue({ principal, subject })
-    const result = await verify(vc, { skipSchema: true, skipValidity: true, skipResolve: true })
+    const result = await verify(vc)
     expect(result.verified).toBe(true)
     expect(result.errors).toEqual([])
   })

@@ -74,11 +74,6 @@ export interface VerifyOptions {
   now?: Date
   fetch?: typeof fetch
   skewSeconds?: number
-  // Test-only: skip individual verification phases during incremental TDD in Stage 2.1-2.2.
-  // Removed in Task 26 (public API freeze) once every phase is implemented.
-  skipSchema?: boolean
-  skipValidity?: boolean
-  skipResolve?: boolean
 }
 
 export interface IssueOptions {
@@ -90,6 +85,8 @@ export interface IssueOptions {
   validFrom?: string
   validUntil?: string
   now?: Date
+  issuer?: string
+  verificationMethod?: string
 }
 
 export interface ResolveOptions {
