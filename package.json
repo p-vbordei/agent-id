@@ -1,0 +1,37 @@
+{
+  "name": "agent-id",
+  "version": "0.1.0",
+  "description": "Self-custody DID + capability VC profile for AI agents",
+  "type": "module",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./context/v1.jsonld": "./context/v1.jsonld",
+    "./schema/capability-v1.json": "./schema/capability-v1.json"
+  },
+  "files": ["src", "context", "schema", "README.md", "SPEC.md", "LICENSE"],
+  "license": "Apache-2.0",
+  "scripts": {
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "conformance": "bun run conformance/run.ts"
+  },
+  "dependencies": {
+    "@noble/ed25519": "^2.1.0",
+    "@noble/hashes": "^1.5.0",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "canonicalize": "^2.0.0",
+    "multiformats": "^13.3.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.0",
+    "@types/bun": "latest",
+    "typescript": "^5.6.0"
+  },
+  "engines": {
+    "bun": ">=1.1.0"
+  }
+}

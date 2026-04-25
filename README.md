@@ -14,7 +14,47 @@ Every other `agent-*` repo in this family references `agent-id` for authorship, 
 
 ## Status
 
-**0.0 — design phase.** Draft spec in [SPEC.md](./SPEC.md). No code yet.
+**0.1.0 — shipped.** [SPEC.md](./SPEC.md) v1.0, reference library in `src/`, conformance vectors in `conformance/`.
+
+## Quickstart
+
+```bash
+git clone <repo>
+cd agent-id
+bun install
+bun run examples/demo.ts
+```
+
+A principal and an agent exchange a signed Capability VC — signature verified, schema validated, DIDs resolved. The full library surface is three functions (`issue`, `verify`, `resolve`):
+
+```typescript
+import { generateKeyPair, didKeyFromPublicKey, issue, verify } from 'agent-id'
+
+const principal = await generateKeyPair()
+const agent = await generateKeyPair()
+
+const vc = await issue({
+  principal,
+  subject: {
+    id: didKeyFromPublicKey(agent.publicKey),
+    type: 'Agent',
+    principal: didKeyFromPublicKey(principal.publicKey),
+    model: { vendor: 'anthropic', id: 'claude-opus-4-7' },
+    capability: { action: 'answer' },
+    valid_from: new Date().toISOString(),
+  },
+})
+
+const { verified } = await verify(vc) // true
+```
+
+### Conformance
+
+```bash
+bun run conformance
+```
+
+Three vectors: C1 (valid VC round-trip), C2 (single-byte mutation rejected), C3 (did:web signature chain). Any implementation passes by running the same vectors against its own verifier.
 
 ## The gap
 
@@ -38,6 +78,8 @@ Google A2A's signed Agent Cards depend on TLS-anchored identity. `agent-id` fill
 - A blockchain
 - A wallet UI
 - Tool descriptions (MCP owns that)
+- HTTP server endpoints (library only in v0.1; deferred to v0.2)
+- VC Status List revocation (deferred to v0.2)
 
 ## Dependencies and companions
 
@@ -63,6 +105,8 @@ Verdict: **EASY**. Full validation in [`../research/validations/agent-id.md`](..
 - **Foundations:** `spruceid/ssi`, `digitalbazaar/vc-js`, `did-method-key`, `did-resolver`, `veramo`.
 - **W3C specs:** `did-core`, `vc-data-model` 2.0.
 - **Agent-native attempts (none credible):** `hazennik/asi` (0★), `ai2ai-trust-framework` (0★), `2060-io/hologram-generic-ai-agent-vs`.
+
+> **Note:** v0.1 ships as a library. The HTTP endpoints below are the *conceptual* operations from SPEC §4; the reference implementation exposes them as the functions `issue`, `verify`, and `resolve`. A server binding is DEFERRED-TO-V0.2.
 
 ## Implementation skeleton
 

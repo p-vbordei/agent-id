@@ -1,6 +1,6 @@
-# agent-id — v0.1 specification (DRAFT)
+# agent-id — v1.0 specification
 
-**Status:** draft, not yet implemented.
+**Status:** stable. Reference implementation at version 0.1.0.
 
 ## Abstract
 
@@ -61,9 +61,11 @@ https://agent-id.dev/context/v1
 }
 ```
 
-The VC MUST be signed by the **Principal**'s key using `eddsa-rdfc-2022` (or equivalent Data Integrity proof suite). An agent presenting a VC is MUST also sign its own sessions with its own Ed25519 key, which MUST appear as a verification method in the agent DID Document.
+Conforming v1.0 implementations MUST use the `eddsa-jcs-2022` Data Integrity cryptosuite ([VC Data Integrity — eddsa-jcs-2022](https://www.w3.org/TR/vc-di-eddsa/#eddsa-jcs-2022)). The VC is signed by the **Principal**'s key. An agent presenting a VC is MUST also sign its own sessions with its own Ed25519 key, which MUST appear as a verification method in the agent DID Document.
 
 ## 4. Operations
+
+> The operations below are described as HTTP endpoints for normative clarity. Conforming implementations MAY expose them as a library; the reference implementation does (`issue`, `verify`, `resolve`). An HTTP binding is RECOMMENDED but not REQUIRED for v1.0.
 
 ### 4.1 Issue
 
