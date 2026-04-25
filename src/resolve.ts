@@ -46,7 +46,10 @@ function didWebToUrl(did: string): string {
   const rest = did.slice('did:web:'.length)
   const parts = rest.split(':').map(decodeURIComponent)
   const host = parts[0]
-  if (!host) throw new Error(`invalid did:web: ${did}`)
+  if (!host) throw new Error(`invalid did:web: empty host in ${did}`)
+  if (parts.slice(1).some((p) => p === '')) {
+    throw new Error(`invalid did:web: empty segment in ${did}`)
+  }
   if (parts.length === 1) return `https://${host}/.well-known/did.json`
   const path = parts.slice(1).join('/')
   return `https://${host}/${path}/did.json`

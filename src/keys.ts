@@ -26,12 +26,21 @@ export function publicKeyFromDidKey(did: string): Uint8Array {
   }
   const multibase = did.slice('did:key:'.length)
   const bytes = base58btc.decode(multibase)
-  if (bytes[0] !== 0xed || bytes[1] !== 0x01) {
+  if (bytes.length < 34) {
     throw new Error(
-      `unsupported key type in did:key (expected Ed25519 multicodec 0xed01, got 0x${bytes[0]?.toString(16)}${bytes[1]?.toString(16)})`,
+      `did:key multibase too short: decoded ${bytes.length} bytes (need 2-byte multicodec + 32-byte Ed25519 key)`,
     )
   }
-  return bytes.slice(2)
+  if (bytes[0] !== 0xed || bytes[1] !== 0x01) {
+    // bytes[0] and bytes[1] are defined here (length >= 34 checked above).
+    const c0 = bytes[0] as number
+    const c1 = bytes[1] as number
+    const got = `0x${c0.toString(16).padStart(2, '0')}${c1.toString(16).padStart(2, '0')}`
+    throw new Error(
+      `unsupported key type in did:key (expected Ed25519 multicodec 0xed01, got ${got})`,
+    )
+  }
+  return bytes.slice(2, 34)
 }
 
 export function verificationMethodId(did: string): string {

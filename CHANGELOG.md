@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.1] — 2026-04-25
+
+Adversarial-input hardening from a debugging round. No API or behavior changes for valid inputs.
+
+### Fixed
+- `verify(null)` and `verify(undefined)` no longer throw — they return `{ verified: false, errors: [...] }` with a clear message. Public-API guard for non-TypeScript callers.
+- `did:web` with empty path segments (e.g. `did:web:example.com:` or `did:web:example.com::agents:alice`) now rejects explicitly instead of producing malformed URLs with double slashes.
+- `publicKeyFromDidKey` on a too-short multibase (e.g. `did:key:z`) now reports `did:key multibase too short: decoded N bytes (need 2-byte multicodec + 32-byte Ed25519 key)` instead of leaking literal `undefined` tokens into the error message.
+
+### Added
+- `tests/edge-cases.test.ts` — 7 tests pinning the new guards.
+
 ## [0.1.0] — 2026-04-24
 
 Initial public release of the `agent-id` reference implementation and v1.0 specification.

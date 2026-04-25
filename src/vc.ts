@@ -64,6 +64,13 @@ export async function verify(
 ): Promise<VerifyResult> {
   const errors: string[] = []
 
+  if (!vc || typeof vc !== 'object') {
+    return {
+      verified: false,
+      errors: [`vc must be an object, got ${vc === null ? 'null' : typeof vc}`],
+    }
+  }
+
   const schemaRes = validateCapabilityVC(vc)
   if (!schemaRes.valid) {
     for (const e of schemaRes.errors) errors.push(`schema: ${e}`)
