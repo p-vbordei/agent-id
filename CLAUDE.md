@@ -2,7 +2,7 @@
 
 ## Family coordination
 
-Before starting work, read `../multi-repo-agent-coord/BOARD.md`.
+Before starting work, read the family board at `multi-repo-agent-coord/BOARD.md` (a sibling directory of this repo's root).
 
 When you finish a stage, change something that affects another repo, or have a question for one, do BOTH:
 - Update your row in the **Now** table.
