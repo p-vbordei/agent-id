@@ -30,3 +30,4 @@ venv/
 tmp/
 .cache/
 .claude/
+.npmrc
