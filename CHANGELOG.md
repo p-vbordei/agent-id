@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.1.5] — 2026-04-27
+
+Canonical scope move: published under the `@p-vbordei` npm organization (matching the GitHub handle). Metadata-only release; no code changes.
+
+### Changed
+- Package name: `@vlad1987654123/agent-id` → `@p-vbordei/agent-id`. The `@p-vbordei` org has been registered on npm; this package now lives there.
+
+### Deprecated
+- `@vlad1987654123/agent-id@*` — install will emit a deprecation warning pointing users to `@p-vbordei/agent-id`.
+
+### Install
+```bash
+bun add @p-vbordei/agent-id
+```
+
 ## [0.1.4] — 2026-04-27
 
 Metadata-only release. No code changes. Corrects the npm scope and adds author / repo / keywords metadata for npm registry discoverability.

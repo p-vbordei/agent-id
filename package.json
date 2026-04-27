@@ -1,6 +1,6 @@
 {
-  "name": "@vlad1987654123/agent-id",
-  "version": "0.1.4",
+  "name": "@p-vbordei/agent-id",
+  "version": "0.1.5",
   "publishConfig": {
     "access": "public"
   },
