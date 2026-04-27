@@ -51,3 +51,48 @@ describe('keys — short multibase produces a clean error', () => {
     }
   })
 })
+
+describe('resolve did:web — timeout and size limits', () => {
+  test('aborts slow fetch after fetchTimeoutMs', async () => {
+    // Fetch never resolves on its own; only the abort signal can reject it.
+    const slowFetch = ((_url: RequestInfo | URL, init?: RequestInit) =>
+      new Promise((_resolve, reject) => {
+        init?.signal?.addEventListener('abort', () => reject(new Error('aborted')))
+      })) as unknown as typeof fetch
+
+    await expect(
+      resolve('did:web:slow.example', { fetch: slowFetch, fetchTimeoutMs: 50 }),
+    ).rejects.toThrow(/timed out|timeout/i)
+  })
+
+  test('rejects response with Content-Length above maxResponseBytes', async () => {
+    const huge = (async () =>
+      new Response('{}', {
+        headers: { 'content-length': '99999999', 'content-type': 'application/json' },
+      })) as unknown as typeof fetch
+
+    await expect(
+      resolve('did:web:huge.example', { fetch: huge, maxResponseBytes: 1024 }),
+    ).rejects.toThrow(/too large|size limit|exceeds/i)
+  })
+
+  test('accepts a normal small response with default options', async () => {
+    const ok = (async () =>
+      new Response(JSON.stringify({ id: 'did:web:ok.example', verificationMethod: [] }), {
+        headers: { 'content-type': 'application/json' },
+      })) as unknown as typeof fetch
+
+    const doc = await resolve('did:web:ok.example', { fetch: ok })
+    expect(doc.id).toBe('did:web:ok.example')
+  })
+
+  test('accepts response when Content-Length is within limit', async () => {
+    const small = (async () =>
+      new Response(JSON.stringify({ id: 'did:web:ok.example', verificationMethod: [] }), {
+        headers: { 'content-length': '60', 'content-type': 'application/json' },
+      })) as unknown as typeof fetch
+
+    const doc = await resolve('did:web:ok.example', { fetch: small, maxResponseBytes: 1024 })
+    expect(doc.id).toBe('did:web:ok.example')
+  })
+})

@@ -1,6 +1,6 @@
 {
   "name": "agent-id",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Self-custody DID + capability VC profile for AI agents",
   "type": "module",
   "main": "src/index.ts",

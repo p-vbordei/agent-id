@@ -74,6 +74,8 @@ export interface VerifyOptions {
   now?: Date
   fetch?: typeof fetch
   skewSeconds?: number
+  fetchTimeoutMs?: number
+  maxResponseBytes?: number
 }
 
 export interface IssueOptions {
@@ -91,6 +93,8 @@ export interface IssueOptions {
 
 export interface ResolveOptions {
   fetch?: typeof fetch
+  fetchTimeoutMs?: number
+  maxResponseBytes?: number
 }
 
 export const CONTEXT_V2 = 'https://www.w3.org/ns/credentials/v2'

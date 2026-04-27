@@ -115,7 +115,7 @@ export async function verify(
 
       let issuerPublicKey: Uint8Array | undefined
       try {
-        const issuerDoc = await resolve(vc.issuer, opts.fetch ? { fetch: opts.fetch } : {})
+        const issuerDoc = await resolve(vc.issuer, resolveOptsFrom(opts))
         issuerPublicKey = extractKeyForVM(issuerDoc, vc.proof.verificationMethod)
         if (!issuerPublicKey) {
           errors.push(
@@ -137,7 +137,7 @@ export async function verify(
 
   // Agent DID resolution — separate phase.
   try {
-    const agentDoc = await resolve(vc.credentialSubject.id, opts.fetch ? { fetch: opts.fetch } : {})
+    const agentDoc = await resolve(vc.credentialSubject.id, resolveOptsFrom(opts))
     if (!agentDoc.verificationMethod?.length) {
       errors.push('agent DID document has no verificationMethod')
     }
@@ -146,6 +146,14 @@ export async function verify(
   }
 
   return { verified: errors.length === 0, errors }
+}
+
+function resolveOptsFrom(opts: VerifyOptions): import('./types.ts').ResolveOptions {
+  return {
+    ...(opts.fetch ? { fetch: opts.fetch } : {}),
+    ...(opts.fetchTimeoutMs !== undefined ? { fetchTimeoutMs: opts.fetchTimeoutMs } : {}),
+    ...(opts.maxResponseBytes !== undefined ? { maxResponseBytes: opts.maxResponseBytes } : {}),
+  }
 }
 
 function extractKeyForVM(doc: DidDocument, vmId: string): Uint8Array | undefined {

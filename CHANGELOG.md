@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.2] — 2026-04-27
+
+DoS-resistance hardening for `did:web` resolution. No API breakage.
+
+### Added
+- `fetchTimeoutMs` option on `VerifyOptions` and `ResolveOptions` — default `5000` (5s). Aborts hung or slow `did:web` fetches via `AbortController`.
+- `maxResponseBytes` option — default `1048576` (1 MiB). Rejects responses with `Content-Length` above the limit before parsing.
+- 4 new tests in `tests/edge-cases.test.ts` covering timeout, oversize-rejection, and default-option pass-through.
+
+### Why
+A malicious or slow `did:web` host could previously hang `verify()` indefinitely or force the verifier to allocate arbitrary memory parsing a giant JSON response. Both are now bounded by sensible defaults.
+
 ## [0.1.1] — 2026-04-25
 
 Adversarial-input hardening from a debugging round. No API or behavior changes for valid inputs.

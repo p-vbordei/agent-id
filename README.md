@@ -108,6 +108,8 @@ const { verified, errors } = await verify(vc, {
   now?,                               // defaults to new Date()
   fetch?,                             // for did:web — inject a stub or use global
   skewSeconds?,                       // defaults to 300
+  fetchTimeoutMs?,                    // defaults to 5000 (5s) — aborts slow did:web hosts
+  maxResponseBytes?,                  // defaults to 1 MiB — rejects oversized DID docs
 })
 ```
 
