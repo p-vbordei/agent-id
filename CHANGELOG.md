@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.1.3] — 2026-04-27
+
+Metadata-only release. No code changes.
+
+### Changed
+- Package name: `agent-id` → `@p-vbordei/agent-id`. The unscoped name was rejected by npm's anti-typosquatting check (too similar to existing `agentid` package). Scoped under `@p-vbordei` (matching the GitHub org).
+- Added `publishConfig.access: "public"` to `package.json` so future scoped publishes default correctly.
+- README install + import examples updated.
+
+### Install
+```bash
+bun add @p-vbordei/agent-id
+```
+
 ## [0.1.2] — 2026-04-27
 
 DoS-resistance hardening for `did:web` resolution. No API breakage.

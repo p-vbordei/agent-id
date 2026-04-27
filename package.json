@@ -1,6 +1,9 @@
 {
-  "name": "agent-id",
-  "version": "0.1.2",
+  "name": "@p-vbordei/agent-id",
+  "version": "0.1.3",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Self-custody DID + capability VC profile for AI agents",
   "type": "module",
   "main": "src/index.ts",
