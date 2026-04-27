@@ -8,7 +8,7 @@
 > **Machine-first identity for AI agents.** Self-custody DID + Capability Verifiable Credential profile. Three functions, five dependencies, zero blockchain.
 
 ```typescript
-import { generateKeyPair, didKeyFromPublicKey, issue, verify } from '@p-vbordei/agent-id'
+import { generateKeyPair, didKeyFromPublicKey, issue, verify } from '@vlad1987654123/agent-id'
 
 const principal = await generateKeyPair()
 const agent = await generateKeyPair()
@@ -61,9 +61,9 @@ You'll see a principal and an agent exchange a signed Capability VC. Signature v
 **Use as a library:**
 
 ```bash
-bun add @p-vbordei/agent-id
+bun add @vlad1987654123/agent-id
 # or
-npm install @p-vbordei/agent-id
+npm install @vlad1987654123/agent-id
 ```
 
 ---

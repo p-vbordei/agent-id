@@ -1,10 +1,31 @@
 {
-  "name": "@p-vbordei/agent-id",
-  "version": "0.1.3",
+  "name": "@vlad1987654123/agent-id",
+  "version": "0.1.4",
   "publishConfig": {
     "access": "public"
   },
   "description": "Self-custody DID + capability VC profile for AI agents",
+  "author": "Vlad Bordei <bordeivlad@gmail.com>",
+  "homepage": "https://github.com/p-vbordei/agent-id#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/p-vbordei/agent-id.git"
+  },
+  "bugs": {
+    "url": "https://github.com/p-vbordei/agent-id/issues"
+  },
+  "keywords": [
+    "did",
+    "verifiable-credentials",
+    "decentralized-identity",
+    "ai-agents",
+    "agent-infrastructure",
+    "ed25519",
+    "eddsa-jcs-2022",
+    "self-custody",
+    "did-key",
+    "did-web"
+  ],
   "type": "module",
   "main": "src/index.ts",
   "exports": {

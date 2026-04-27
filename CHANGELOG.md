@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.1.4] — 2026-04-27
+
+Metadata-only release. No code changes. Corrects the npm scope and adds author / repo / keywords metadata for npm registry discoverability.
+
+### Changed
+- Package name: `@p-vbordei/agent-id` → `@vlad1987654123/agent-id`. The `@p-vbordei` org doesn't exist on npm (it's the GitHub handle, not the npm scope); `@vlad1987654123` is the actual npm account. v0.1.3 was tagged but never published due to this mismatch.
+
+### Added
+- `author`, `homepage`, `repository`, `bugs`, `keywords` fields in `package.json` for npm registry discoverability.
+
+### Install
+```bash
+bun add @vlad1987654123/agent-id
+```
+
 ## [0.1.3] — 2026-04-27
 
 Metadata-only release. No code changes.
